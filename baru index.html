@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nama Project</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Header -->
+  <div class="bg-gradient-to-r from-pink-500 to-rose-400 p-6 rounded-b-xl shadow-md text-white">
+    <h1 class="text-2xl font-bold">Kantong Resti</h1>
+    <p class="text-sm">Pemantauan Ibu Hamil Resiko Tinggi</p>
+
+    <!-- Tombol Aksi -->
+    <div class="mt-4 flex gap-3">
+      <button onclick="toggleForm()" class="bg-white text-pink-600 px-4 py-2 rounded-md font-semibold shadow">+ Tambah Data</button>
+      <button onclick="window.print()" class="border border-white px-4 py-2 rounded-md font-semibold">🖨️ Cetak Data</button>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div class="p-4">
+    <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Cari nama ibu..." class="w-full px-4 py-2 mb-3 rounded-md shadow focus:outline-none" />
+    <select id="filterResiko" onchange="filterData()" class="w-full px-4 py-2 mb-2 rounded-md shadow">
+      <option value="">Semua Jenis Resiko</option>
+	<option>Hipertensi</option>
+	<option>Diabetes</option>
+	<option>Preeklampsia</option>
+	<option>Diabetes Gestasional</option>
+	<option>Anemia Berat</option>
+	<option>Kehamilan Kembar</option>
+  	<option>Placenta Previa</option>
+  	<option>Solusio Plasenta</option>
+  	<option>Infeksi Saluran Kemih (ISK) Berulang</option>
+  	<option>Usia Ibu &lt; 20 Tahun atau &gt; 35 Tahun</option>
+  	<option>Riwayat Caesar Berulang</option>
+  	<option>Perdarahan Trimester Awal</option>
+  	<option>Bayi Letak Sungsang</option>
+  	<option>Ketuban Pecah Dini (KPD)</option>
+  	<option>Oligohidramnion (air ketuban kurang)</option>
+  	<option>Polihidramnion (air ketuban berlebih)</option>
+  	<option>Riwayat Keguguran Berulang</option>
+  	<option>Penyakit Jantung Bawaan</option>
+  	<option>Gizi Buruk pada Ibu</option>
+  	<option>Kehamilan Tidak Diinginkan</option>
+  	<option>Riwayat Bayi Lahir Mati (Stillbirth)</option>
+    </select>
+    <button onclick="resetFilter()" class="w-full bg-gray-300 text-sm py-2 rounded-md">Reset Filter</button>
+  </div>
+
+  <!-- Form Tambah Data -->
+  <div id="formSection" class="p-4 hidden">
+    <div class="bg-white rounded-lg shadow p-4">
+      <h2 class="text-lg font-bold mb-2">Form Tambah Ibu Hamil</h2>
+      <input type="text" id="nama" placeholder="Nama Ibu" class="w-full mb-2 px-4 py-2 border rounded-md" />
+      <input type="text" id="suami" placeholder="Nama Suami" class="w-full mb-2 px-4 py-2 border rounded-md" />
+      <input type="text" id="gpa" placeholder="GPA (misal: G3P2A0)" class="w-full mb-2 px-4 py-2 border rounded-md" />
+      <select id="resiko" class="w-full mb-3 px-4 py-2 border rounded-md">
+        <option value="">Pilih Jenis Resiko</option>
+<option>Hipertensi</option>
+	<option>Diabetes</option>
+	<option>Preeklampsia</option>
+	<option>Diabetes Gestasional</option>
+	<option>Anemia Berat</option>
+	<option>Kehamilan Kembar</option>
+  	<option>Placenta Previa</option>
+  	<option>Solusio Plasenta</option>
+  	<option>Infeksi Saluran Kemih (ISK) Berulang</option>
+  	<option>Usia Ibu &lt; 20 Tahun atau &gt; 35 Tahun</option>
+  	<option>Riwayat Caesar Berulang</option>
+  	<option>Perdarahan Trimester Awal</option>
+  	<option>Bayi Letak Sungsang</option>
+  	<option>Ketuban Pecah Dini (KPD)</option>
+  	<option>Oligohidramnion (air ketuban kurang)</option>
+  	<option>Polihidramnion (air ketuban berlebih)</option>
+  	<option>Riwayat Keguguran Berulang</option>
+  	<option>Penyakit Jantung Bawaan</option>
+  	<option>Gizi Buruk pada Ibu</option>
+  	<option>Kehamilan Tidak Diinginkan</option>
+  	<option>Riwayat Bayi Lahir Mati (Stillbirth)</option>
+      </select>
+      <div class="flex gap-2">
+        <button onclick="simpanData()" class="bg-pink-500 text-white px-4 py-2 rounded-md">Simpan</button>
+        <button onclick="resetForm()" class="bg-gray-300 text-black px-4 py-2 rounded-md">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data List -->
+  <div id="dataList" class="px-4 pb-10"></div>
+
+  <script>
+    const data = [];
+
+    function toggleForm() {
+      document.getElementById("formSection").classList.toggle("hidden");
+    }
+
+    function resetForm() {
+      document.getElementById("nama").value = "";
+      document.getElementById("suami").value = "";
+      document.getElementById("gpa").value = "";
+      document.getElementById("resiko").value = "";
+    }
+
+    function simpanData() {
+      const nama = document.getElementById("nama").value.trim();
+      const suami = document.getElementById("suami").value.trim();
+      const gpa = document.getElementById("gpa").value.trim();
+      const resiko = document.getElementById("resiko").value;
+      if (nama && suami && gpa && resiko) {
+        data.push({ nama, suami, gpa, resiko });
+        resetForm();
+        tampilkanData();
+        toggleForm();
+      } else {
+        alert("Semua kolom wajib diisi!");
+      }
+    }
+
+    function tampilkanData() {
+      const list = document.getElementById("dataList");
+      list.innerHTML = "";
+      data.forEach((item, index) => {
+        const card = `<div class='bg-white rounded-lg shadow p-4 mb-4'>
+          <div class='flex justify-between items-center'>
+            <h2 class='text-lg font-bold text-gray-700'>${item.nama}</h2>
+            <span class='bg-rose-200 text-rose-700 text-xs px-3 py-1 rounded-full'>${item.resiko}</span>
+          </div>
+          <p class='text-sm text-gray-600 mt-1'>Suami: ${item.suami}</p>
+          <p class='text-sm text-gray-600'>GPA: ${item.gpa}</p>
+        </div>`;
+        list.innerHTML += card;
+      });
+    }
+
+    function filterData() {
+      const keyword = document.getElementById("searchInput").value.toLowerCase();
+      const resikoFilter = document.getElementById("filterResiko").value;
+      const list = document.getElementById("dataList");
+      list.innerHTML = "";
+      data.filter(item => {
+        const cocokNama = item.nama.toLowerCase().includes(keyword);
+        const cocokResiko = !resikoFilter || item.resiko === resikoFilter;
+        return cocokNama && cocokResiko;
+      }).forEach(item => {
+        const card = `<div class='bg-white rounded-lg shadow p-4 mb-4'>
+          <div class='flex justify-between items-center'>
+            <h2 class='text-lg font-bold text-gray-700'>${item.nama}</h2>
+            <span class='bg-rose-200 text-rose-700 text-xs px-3 py-1 rounded-full'>${item.resiko}</span>
+          </div>
+          <p class='text-sm text-gray-600 mt-1'>Suami: ${item.suami}</p>
+          <p class='text-sm text-gray-600'>GPA: ${item.gpa}</p>
+        </div>`;
+        list.innerHTML += card;
+      });
+    }
+    function resetFilter() {
+      document.getElementById("searchInput").value = "";
+      document.getElementById("filterResiko").value = "";
+      tampilkanData();
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kantong Resti</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-pink-100 font-sans">
+
+  <!-- Header -->
+  <div class="bg-pink-300 p-6 rounded-b-xl shadow-md text-gray-800 relative">
+    <div class="flex justify-between items-start">
+      <div>
+        <h1 class="text-2xl font-bold">INOVASI KANTONG IBU HAMIL RESTI</h1>
+        <div class="mt-2">
+          <span class="bg-blue-700 text-white px-3 py-1 rounded">Presentasi</span>
+        </div>
+        <p class="mt-4 text-sm">Disusun oleh :</p>
+        <p class="font-bold">MAHASISWA<br>STIKes WDH</p>
+      </div>
+
+      <div class="flex flex-col items-center">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Pregnancy_icon.svg/2048px-Pregnancy_icon.svg.png" alt="Logo Mamresti" class="h-28 mb-2">
+        <p class="font-bold text-purple-700 text-xl">MAMRESTI</p>
+        <p class="text-sm text-gray-600">Premium quality service</p>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://kantong-resti.netlify.app" alt="QR Code" class="mt-2">
+      </div>
+    </div>
+  </div>
+
